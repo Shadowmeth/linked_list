@@ -513,4 +513,6 @@ int main()
 	insertAtEnd(l, 2);
 
 	display(l);
+	
+	deleteList(&l);
 }
