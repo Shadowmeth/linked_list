@@ -41,7 +41,8 @@ void deleteSmallest(List*);
 int lastIndexOf(List*, int);
 void deleteDuplicates(List*);
 void printMiddle(List*);
-
+List* pairList(List*, List*);
+void swapFirstAndLast(List*);
 
 // return a new heap allocated linked list
 List* newList()
@@ -437,20 +438,79 @@ void printMiddle(List* l)
 	cout << "Middle is: " << curr->data << endl;
 }
 
+List* pairList(List* l1, List* l2)
+{
+	Node* temp1 = l1->first;
+	Node* temp2 = l2->first;
+	List* pair = newList();
+
+	while (temp1 || temp2) {
+		if (temp1 != NULL) {
+			insertAtEnd(pair, temp1->data);
+			temp1 = temp1->next;
+		}
+		
+		if (temp2 != NULL) {
+			insertAtEnd(pair, temp2->data);
+			temp2 = temp2->next;
+		}
+	}
+
+	return pair;
+}
+
+void swapFirstAndLast(List* l)
+{
+	Node* sndLast = previousNode(l, l->last);
+	l->last->next = l->first->next; // step 1
+	sndLast->next = l->first; // step 2
+	l->first->next = NULL; // step 3
+	// step 4 is simply changing the pointers
+	Node* temp = l->first;
+	l->first = l->last;
+	l->last = temp;
+}
+
+void swapNodes(List* l, int p, int k)
+{
+	if (l->sz == 0 || l->sz == 1) {
+		return; // do nothing
+	}
+
+	if (p == 0 && k == l->sz - 1) {
+		// we want to swap first and last node
+		swapFirstAndLast(l);
+	}
+	else if (p == 0 && k != l->sz - 1) {
+		// we want to swap first node with some arbitrary node
+		Node* n = l->first;
+		for (int i = 0; i < k; i++) {
+			n = n->next;
+		}
+		Node* predeccessorOfN = previousNode(l, n);
+		Node* temp = n->next;
+		n->next = predeccessorOfN;
+		predeccessorOfN->next;
+		// THIS IS INCOMPLETE ATM
+	}
+
+}
+
+void swapKNode(List* l, int k)
+{
+
+}
+
 int main()
 {
 	List* l = newList();
-	// 20 -> 18 -> 15 -> 20 -> 6 -> 18 -> 5 -> 18
-	insertAtEnd(l, 20);
-	insertAtEnd(l, 18);
-	insertAtEnd(l, 15);
-	insertAtEnd(l, 20);
-	insertAtEnd(l, 6);
-	insertAtEnd(l, 18);
+	// 3 5 7 3 4 2
+	insertAtEnd(l, 3);
 	insertAtEnd(l, 5);
-	insertAtEnd(l, 18);
-	
+	insertAtEnd(l, 7);
+	insertAtEnd(l, 3);
+	insertAtEnd(l, 4);
+	insertAtEnd(l, 2);
 
-
-	deleteList(&l);
+	display(l);
 }
