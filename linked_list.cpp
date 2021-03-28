@@ -622,7 +622,7 @@ void swapNodes(List* l, int p, int k)
 
 void swapKthNodes(List* l, int k)
 {
-	swapNodes(l, k - 1, l->sz - k);
+	swapNodes(l, k - 1, size(l) - k);
 }
 
 void addListToSelf(List* l)
@@ -633,8 +633,8 @@ void addListToSelf(List* l)
 
 void swapAllNodes(List* l)
 {
-	for (int i = 0; i < l->sz / 2; i++) {
-		swapNodes(l, i, l->sz - 1 - i);
+	for (int i = 0; i < size(l) / 2; i++) {
+		swapNodes(l, i, size(l) - 1 - i);
 	}
 }
 
@@ -642,7 +642,7 @@ void reverseInGroupedSize(List* l, int k)
 {
 	// how many times to run loop
 	int count = l->sz / k;
-	if (l->sz % k != 0) {
+	if (size(l) % k != 0) {
 		count++;
 	}
 
