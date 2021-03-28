@@ -234,7 +234,7 @@ void add(List* l, int index, int item)
 void remove(List* l, int index)
 {
 	// if the index is greater than the size of linked list we can't do anything 
-	if (index > l->sz - 1) {
+	if (index > size(l) - 1) {
 		return; // do nothing, we received invalid index
 	}
 	if (index < 0) {
@@ -309,7 +309,7 @@ List* reversedList(List* l)
 // we want to check if the linked lists are equal or not
 bool listEqual(List* l1, List* l2)
 {
-	if (l1->sz != l2->sz) {
+	if (size(l1) != size(l2)) {
 		return false;
 	}
 
@@ -372,7 +372,7 @@ void displayFrequencies(List* l)
 
 void deleteSmallest(List* l)
 {
-	if (l->sz == 0) {
+	if (size(l) == 0) {
 		return; // do nothing, list is empty
 	}
 
@@ -525,7 +525,7 @@ void swapLastWithKNode(List* l, int k)
 	Node* temp = n->next;
 	Node* sndLast = previousNode(l, l->last);
 
-	if (k == l->sz - 2) {
+	if (k == (size(l) - 2)) {
 		// swap last and second last node
 		Node* predeccessorOfSndLast = previousNode(l, sndLast);
 		predeccessorOfSndLast->next = l->last;
@@ -580,35 +580,35 @@ void swapConsecutivePAndK(List* l, int p, int k)
 
 void swapNodes(List* l, int p, int k)
 {
-	if (l->sz == 0 || l->sz == 1) {
+	if (size(l) == 0 || size(l) == 1) {
 		return; // do nothing, we can't swap on empty list or a list with only 1 node
 	}
 	else if (p == k) {
 		return; // do nothing when both indexes are same also
 	}
 
-	if (p == 0 && k == l->sz - 1 ||  p == l->sz - 1 && k == 0) {
+	if (p == 0 && k == size(l) - 1 ||  p == size(l) - 1 && k == 0) {
 		// we want to swap first and last node
 		swapFirstAndLastNode(l);
 	}
-	else if (p == 0 && k != l->sz - 1 && k < l->sz - 1) {
+	else if (p == 0 && k != size(l) - 1 && k < size(l) - 1) {
 		// k < l->sz - 1 because we don't want an incorrect index
 		// this is assuming that p is the index on the left and k is the index on the right
 		// we want to swap first node with some arbitrary node
 		swapFirstWithKNode(l, k);
 	}
-	else if (p != 0 && p > 0 && k == l->sz - 1) { // 
+	else if (p != 0 && p > 0 && k == size(l) - 1) { // 
 		// we p > 0 because we don't want an incorrect index
 		// this is assuming that p is the index on the left and k is the index on the right
 		// we want to swap last node with some arbitrary node
 		swapLastWithKNode(l, p);
 	}
-	else if (p != 0 && p > 0 && k != l->sz - 1 && k < l->sz - 1 && (abs(p - k) != 1)) {
+	else if (p != 0 && p > 0 && k != size(l) - 1 && k < size(l) - 1 && (abs(p - k) != 1)) {
 		// we want to swap some arbitrary nodes and they AREN'T consecutive
 		// this is assuming that p is the index on the left and k is the index on the right
 		swapNonConsecutivePAndK(l, p, k);
 	}
-	else if (p != 0 && p > 0 && k != l->sz - 1 && k < l->sz - 1 && (abs(p - k) == 1)) {
+	else if (p != 0 && p > 0 && k != size(l) - 1 && k < size(l) - 1 && (abs(p - k) == 1)) {
 		// we want to swap some arbitrary nodes and they ARE consecutive
 		// this is assuming that p is the index on the left and k is the index on the right
 		swapConsecutivePAndK(l, p, k);
@@ -653,7 +653,7 @@ void reverseInGroupedSize(List* l, int k)
 			// last iteration
 			// we might now exactly contain k grouped elements
 			// such as in case of 1 2 3 4 5 6 7 8 12 7, with k = 4
-			j = l->sz - 1;
+			j = size(l) - 1;
 		}
 		
 		int tempI = i;
