@@ -452,7 +452,7 @@ void reverseDisplay(List* l)
 void printMiddle(List* l)
 {
 	Node* curr = l->first;
-	for (int i = 1; i <= l->sz / 2; i++) {
+	for (int i = 1; i <= size(l) / 2; i++) {
 		curr = curr->next;
 	}
 
