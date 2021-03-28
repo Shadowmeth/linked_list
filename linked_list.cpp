@@ -641,7 +641,7 @@ void swapAllNodes(List* l)
 void reverseInGroupedSize(List* l, int k)
 {
 	// how many times to run loop
-	int count = l->sz / k;
+	int count = size(l) / k;
 	if (size(l) % k != 0) {
 		count++;
 	}
