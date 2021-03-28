@@ -211,7 +211,7 @@ void insertAtEnd(List* l, int x)
 void add(List* l, int index, int item)
 {
 	// if the index is greater than the size of linked list we can't do anything
-	if (index > l->sz - 1) {
+	if (index > size(l) - 1) {
 		return; // do nothing, we received invalid index
 	}
 	if (index < 0) {
