@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 using namespace std;
 
 struct Node
@@ -42,7 +43,27 @@ int lastIndexOf(List*, int);
 void deleteDuplicates(List*);
 void printMiddle(List*);
 List* pairList(List*, List*);
-void swapFirstAndLast(List*);
+void swapNodes(List*, int, int);
+void swapFirstAndLastNode(List*);
+void swapFirstWithKNode(List*, int);
+void swapLastWithKNode(List*, int);
+Node* getIndexBasedNode(List*, int);
+void swapNonConsecutivePAndK(List*, int, int);
+void swapConsecutivePAndK(List*, int, int);
+void swapKthNodes(List*, int);
+void addListToSelf(List*);
+void swapAllNodes(List*);
+void reverseInGroupedSize(List*, int);
+void pairWiseSwapping(List*);
+
+Node* getIndexBasedNode(List* l, int k)
+{
+	Node* n = l->first;
+	for (int i = 0; i < k; i++) {
+		n = n->next;
+	}
+	return n;
+}
 
 // return a new heap allocated linked list
 List* newList()
@@ -264,10 +285,10 @@ List* duplicate(List* l)
 void display(List* l)
 {
 	for (Node* temp = l->first; temp; temp = temp->next) {
-		cout << temp->data << " ";
+		cout << temp->data << " -> ";
 	}
 
-	cout << endl;
+	cout << "NULL" << endl;
 }
 
 // this function returns a new list that is reversed
@@ -459,7 +480,11 @@ List* pairList(List* l1, List* l2)
 	return pair;
 }
 
-void swapFirstAndLast(List* l)
+// this function swaps first and last nodes of the linked list
+// note that this isn't checking for size of the list so calling it on empty list
+// or a list with only 1 node might result in unexpected behavior
+// always perform some checks before calling this
+void swapFirstAndLastNode(List* l)
 {
 	Node* sndLast = previousNode(l, l->last);
 	l->last->next = l->first->next; // step 1
@@ -471,48 +496,200 @@ void swapFirstAndLast(List* l)
 	l->last = temp;
 }
 
-void swapNodes(List* l, int p, int k)
+void swapFirstWithKNode(List* l, int k)
 {
-	if (l->sz == 0 || l->sz == 1) {
-		return; // do nothing
-	}
+	Node* n = getIndexBasedNode(l, k);
 
-	if (p == 0 && k == l->sz - 1) {
-		// we want to swap first and last node
-		swapFirstAndLast(l);
+	if (k == 1) {
+		// swap first and second node
+		Node* snd = l->first->next;
+		l->first->next = snd->next; // step 1
+		snd->next = l->first; // step 2
+		l->first = snd; // step 3
 	}
-	else if (p == 0 && k != l->sz - 1) {
-		// we want to swap first node with some arbitrary node
-		Node* n = l->first;
-		for (int i = 0; i < k; i++) {
-			n = n->next;
-		}
+	else {
+		// otherwise apply this logic to swap first node with some arbitrary node
 		Node* predeccessorOfN = previousNode(l, n);
 		Node* temp = n->next;
-		n->next = predeccessorOfN;
-		predeccessorOfN->next;
-		// THIS IS INCOMPLETE ATM
+		n->next = l->first->next; // step 1
+		predeccessorOfN->next = l->first; // step 2
+		l->first->next = temp; // step 3
+		l->first = n;
+	}
+}
+
+void swapLastWithKNode(List* l, int k)
+{
+	Node* n = getIndexBasedNode(l, k);
+	Node* predeccessorOfN = previousNode(l, n);
+	Node* temp = n->next;
+	Node* sndLast = previousNode(l, l->last);
+
+	if (k == l->sz - 2) {
+		// swap last and second last node
+		Node* predeccessorOfSndLast = previousNode(l, sndLast);
+		predeccessorOfSndLast->next = l->last;
+		l->last->next = sndLast;
+		sndLast->next = NULL;
+		l->last = sndLast;
+	}
+	else {
+		// otherwise apply this logic to swap last node with some arbitrary node
+		predeccessorOfN->next = l->last;
+		l->last->next = temp;
+		sndLast->next = n;
+		n->next = NULL;
+		l->last = n;
 	}
 
 }
 
-void swapKNode(List* l, int k)
+void swapNonConsecutivePAndK(List* l, int p, int k)
 {
+	Node* n1 = getIndexBasedNode(l, p);
+	Node* n2 = getIndexBasedNode(l, k);
+	Node* temp1 = n1->next;
+	Node* temp2 = n2->next;
+	Node* prev1 = previousNode(l, n1);
+	Node* prev2 = previousNode(l, n2);
 
+	// These asserts were added for debugging purposes but I've left them inside
+	// These should never be false unless some very specific edge case occurs which probably shouldn't
+	// since we are calling this function after doing some checks
+	// NOTE: IF THESE ASSERT ARE FAIL THERE IS SOMETHING SERIOUSLY WRONG!!!
+	assert(n1 == prev1->next && "n1 == prev1->next");
+	assert(n2 == prev2->next && "n2 == prev2->next");
+	assert(temp1 == n1->next && "temp1 == n1->next");
+	assert(temp2 == n2->next && "temp2 == n2->next");
+
+	prev1->next = n2; // step 1
+	n2->next = temp1; // step 2
+	prev2->next = n1; // step 3
+	n1->next = temp2; // step 4
+}
+
+void swapConsecutivePAndK(List* l, int p, int k)
+{
+	Node* n = getIndexBasedNode(l, p);
+	Node* prev = previousNode(l, n);
+	Node* temp = n->next;
+	prev->next = temp;
+	n->next = temp->next;
+	temp->next = n;
+}
+
+void swapNodes(List* l, int p, int k)
+{
+	if (l->sz == 0 || l->sz == 1) {
+		return; // do nothing, we can't swap on empty list or a list with only 1 node
+	}
+	else if (p == k) {
+		return; // do nothing when both indexes are same also
+	}
+
+	if (p == 0 && k == l->sz - 1 ||  p == l->sz - 1 && k == 0) {
+		// we want to swap first and last node
+		swapFirstAndLastNode(l);
+	}
+	else if (p == 0 && k != l->sz - 1 && k < l->sz - 1) {
+		// k < l->sz - 1 because we don't want an incorrect index
+		// this is assuming that p is the index on the left and k is the index on the right
+		// we want to swap first node with some arbitrary node
+		swapFirstWithKNode(l, k);
+	}
+	else if (p != 0 && p > 0 && k == l->sz - 1) { // 
+		// we p > 0 because we don't want an incorrect index
+		// this is assuming that p is the index on the left and k is the index on the right
+		// we want to swap last node with some arbitrary node
+		swapLastWithKNode(l, p);
+	}
+	else if (p != 0 && p > 0 && k != l->sz - 1 && k < l->sz - 1 && (abs(p - k) != 1)) {
+		// we want to swap some arbitrary nodes and they AREN'T consecutive
+		// this is assuming that p is the index on the left and k is the index on the right
+		swapNonConsecutivePAndK(l, p, k);
+	}
+	else if (p != 0 && p > 0 && k != l->sz - 1 && k < l->sz - 1 && (abs(p - k) == 1)) {
+		// we want to swap some arbitrary nodes and they ARE consecutive
+		// this is assuming that p is the index on the left and k is the index on the right
+		swapConsecutivePAndK(l, p, k);
+	}
+	else {
+		cerr << "Error: Invalid indexes passed to swapNodes(List* l, int p, int k): Quitting" << endl;
+		std::exit(1);
+	}
+
+}
+
+void swapKthNodes(List* l, int k)
+{
+	swapNodes(l, k - 1, l->sz - k);
+}
+
+void addListToSelf(List* l)
+{
+	List* duplicateList = duplicate(l);
+	l->last->next = duplicateList->first;
+}
+
+void swapAllNodes(List* l)
+{
+	for (int i = 0; i < l->sz / 2; i++) {
+		swapNodes(l, i, l->sz - 1 - i);
+	}
+}
+
+void reverseInGroupedSize(List* l, int k)
+{
+	// how many times to run loop
+	int count = l->sz / k;
+	if (l->sz % k != 0) {
+		count++;
+	}
+
+	int i = 0;
+	int j = k - 1;
+	for (; count > 0; count--) {
+		if (count == 1) {
+			// last iteration
+			// we might now exactly contain k grouped elements
+			// such as in case of 1 2 3 4 5 6 7 8 12 7, with k = 4
+			j = l->sz - 1;
+		}
+		
+		int tempI = i;
+		int tempJ = j;
+		while (i < j) {
+			swapNodes(l, i, j);
+			i++;
+			j--;
+		}
+		i = tempI + k;
+		j = tempJ + k;
+
+	}
+
+}
+
+void pairWiseSwapping(List* l)
+{
+	reverseInGroupedSize(l, 2);
 }
 
 int main()
 {
 	List* l = newList();
-	// 3 5 7 3 4 2
-	insertAtEnd(l, 3);
+	insertAtEnd(l, 20);
+	insertAtEnd(l, 18);
+	insertAtEnd(l, 15);
+	insertAtEnd(l, 10);
+	insertAtEnd(l, 8);
+	insertAtEnd(l, 6);
 	insertAtEnd(l, 5);
-	insertAtEnd(l, 7);
 	insertAtEnd(l, 3);
-	insertAtEnd(l, 4);
-	insertAtEnd(l, 2);
+	insertAtEnd(l, 7);
 
+	pairWiseSwapping(l);
 	display(l);
-	
+
 	deleteList(&l);
 }
